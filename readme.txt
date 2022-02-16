@@ -1,1 +1,1 @@
-High level programming language
+High-level programming language 1 lab
