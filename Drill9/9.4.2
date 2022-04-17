@@ -1,0 +1,60 @@
+#include "std_lib_facilities.h"
+
+struct Date {
+	int year;
+	int month;
+	int day;
+	Date(int y, int m, int d);
+	void add_day(const int n);
+};
+
+Date::Date(int y, int m, int d) {
+	if (d < 1 || d>31) {
+		error("Invalid day!");
+	}
+	if (m < 1 || m>12) {
+		error("Invalid month!");
+	}
+	if (y < 0) {
+		error("Invalid year");
+	}
+	day = d;
+	month = m;
+	year = y;
+}
+
+void Date::add_day(int n) {
+	day += n;
+	if (day > 31) {
+		month++;
+		day -= 31;
+		if (month > 12) {
+			year++;
+			month -= 12;
+		}
+	}
+}
+
+ostream& operator<<(ostream& os, const Date& d) {
+	return os << '(' << d.year << ',' << d.month << ',' << d.day << ')';
+}
+
+int main()
+try {
+	Date today{2000,5,31};
+	Date tomorrow = today;
+	tomorrow.add_day(1);
+
+	cout << "today: " << today << endl;
+	cout << "tomorrow: " << tomorrow << endl;
+
+	return 0;
+}
+catch (exception& e) {
+	cerr << e.what() << endl;
+	return 1;
+}
+catch (...) {
+	cerr << "Some errors!" << endl;
+	return 2;
+}
