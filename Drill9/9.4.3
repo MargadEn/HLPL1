@@ -1,0 +1,65 @@
+#include "std_lib_facilities.h"
+
+ class Date {
+ public:	
+	int year() const { return yy; }
+	int month() const { return mm; }
+	int day() const { return dd; }
+	Date(int y, int m, int d);
+	void add_day(const int n);
+ private:
+	 int yy;
+	 int mm;
+	 int dd;
+};
+
+Date::Date(int y, int m, int d) {
+	if (d < 1 || d>31) {
+		error("Invalid day!");
+	}
+	if (m < 1 || m>12) {
+		error("Invalid month!");
+	}
+	if (y < 0) {
+		error("Invalid year");
+	}
+	dd = d;
+	mm = m;
+	yy = y;
+}
+
+void Date::add_day(int n) {
+	dd += n;
+	if (dd > 31) {
+		mm++;
+		dd -= 31;
+		if (mm > 12) {
+			yy++;
+			mm -= 12;
+		}
+	}
+}
+
+ostream& operator<<(ostream& os, const Date& d) {
+	return os << '(' << d.year() << ',' << d.month() << ',' << d.day() << ')';
+}
+
+int main()
+try {
+	Date today{2000,5,31};
+	Date tomorrow = today;
+	tomorrow.add_day(1);
+
+	cout << "today: " << today << endl;
+	cout << "tomorrow: " << tomorrow << endl;
+
+	return 0;
+}
+catch (exception& e) {
+	cerr << e.what() << endl;
+	return 1;
+}
+catch (...) {
+	cerr << "Some errors!" << endl;
+	return 2;
+}
