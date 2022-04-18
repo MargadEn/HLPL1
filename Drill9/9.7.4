@@ -1,0 +1,121 @@
+#include "std_lib_facilities.h"
+
+enum class Month {
+	Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+};
+
+Month operator++(Month& m) {
+	m = (m == Month::Dec) ? Month::Jan : Month(int(m) + 1);
+	return m;
+}
+
+class Date {
+public:
+	class Invalid {};
+	Date();
+	Date(int y, Month m, int d);
+
+	int day() const;
+	Month month() const;
+	int year() const;
+	void add_day(const int n);
+	void add_month(const int n);
+	void add_year(const int n);
+
+private:
+	int yy;
+	Month mm;
+	int dd;
+	bool is_valid();
+
+	static constexpr array<int, 12> month_day{ 31,28,31,30,31,30,31,31,30,31,30,31 };
+};
+
+Date::Date(int y, Month m, int d) : yy{ y }, mm{ m }, dd{ d } {
+	if (!is_valid()) throw Invalid{};
+}
+
+Month Date::month() const
+{
+	return mm;
+}
+
+int Date::day() const
+{
+	return dd;
+}
+
+int Date::year() const
+{
+	return yy;
+}
+
+void Date::add_day(int n) {
+	if (dd + n <= 31) {
+	    dd += n;
+    }
+	else {
+		int new_day{ dd + n - 31 };
+		while (true) {
+			++mm;
+			if (mm == Month::Jan) {
+				++yy;
+			}
+			if (new_day <= 31) {
+				dd = new_day;
+				break;
+			}
+			new_day -= 31;
+		}
+	}
+}
+
+void Date::add_month(const int n) {
+	for (int i{}; i < n; i++);
+}
+
+void Date::add_year(const int n) {
+	yy += n;
+}
+
+bool Date::is_valid() {
+	if (mm < Month::Jan || mm > Month::Dec) {
+		return false;
+	}
+	if (dd < 1 || dd > 31) {
+		return false;
+	}
+	if (yy <= 0) {
+		return false;
+	}
+	return true;
+}
+
+ostream& operator<<(ostream& os, Date& d) {
+	return os << '(' << (int)d.year() << ',' << (int)d.month() << ',' << d.day() << ')';
+}
+
+int main()
+try {
+	try {
+		Date today{ 2000, Month::May, 31 };
+		Date tomorrow{ today };
+		tomorrow.add_day(1);
+
+		cout << "today" << today << endl;
+		cout << "tomorrow" << tomorrow << endl;
+	}
+	catch (Date::Invalid) {
+		error("Invalid date");
+	}
+	return 0;
+}
+
+catch (exception& e) {
+	cerr << e.what() << endl;
+	return 1;
+}
+catch (...) {
+	cerr << "Some errors!" << endl;
+	return 2;
+}
